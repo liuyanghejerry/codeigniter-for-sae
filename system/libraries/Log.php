@@ -41,10 +41,11 @@ class CI_Log {
 
 		$this->_log_path = ($config['log_path'] != '') ? $config['log_path'] : APPPATH.'logs/';
 
-		if ( ! is_dir($this->_log_path) OR ! is_really_writable($this->_log_path))
-		{
-			$this->_enabled = FALSE;
-		}
+		// deleted for sae
+		// if ( ! is_dir($this->_log_path) OR ! is_really_writable($this->_log_path))
+		// {
+			// $this->_enabled = FALSE;
+		// }
 
 		if (is_numeric($config['log_threshold']))
 		{
@@ -87,28 +88,44 @@ class CI_Log {
 		$filepath = $this->_log_path.'log-'.date('Y-m-d').'.php';
 		$message  = '';
 
-		if ( ! file_exists($filepath))
-		{
-			$message .= "<"."?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?".">\n\n";
-		}
+		// if ( ! file_exists($filepath))
+		// {
+			// $message .= "<"."?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?".">\n\n";
+		// }
 
-		if ( ! $fp = @fopen($filepath, FOPEN_WRITE_CREATE))
-		{
-			return FALSE;
-		}
+		// if ( ! $fp = @fopen($filepath, FOPEN_WRITE_CREATE))
+		// {
+			// return FALSE;
+		// }
 
 		$message .= $level.' '.(($level == 'INFO') ? ' -' : '-').' '.date($this->_date_fmt). ' --> '.$msg."\n";
 
-		flock($fp, LOCK_EX);
-		fwrite($fp, $message);
-		flock($fp, LOCK_UN);
-		fclose($fp);
+		// flock($fp, LOCK_EX);
+		// fwrite($fp, $message);
+		// flock($fp, LOCK_UN);
+		// fclose($fp);
 
-		@chmod($filepath, FILE_WRITE_MODE);
+		// @chmod($filepath, FILE_WRITE_MODE);
 		
-		//hacked for SAE
-		//sae_debug($msg);
-		//return TRUE;
+		$ret = config_item('sae_storage');
+		if($ret == FALSE || empty($ret)){
+			sae_debug('Your SAE Storage is disabled.');
+			return FALSE;
+		}
+		$storage_name = config_item('sae_storage_name');
+		$storage_authority = config_item('sae_storage_authority');
+		if($storage_authority == 'secret'){
+			$storage_access = config_item('sae_storage_access');
+			$storage_secret = config_item('sae_storage_secret');
+			$s = new SaeStorage($storage_access, $storage_secret);
+		}else{
+			$s = new SaeStorage();
+		}
+		$ret = $s->write($storage_name, $filepath, $message);
+		if($ret == FALSE){
+			log_message('debug', 'There\'s an error during reading file. Error No.'.$s->errno());
+			return FALSE;
+		}
 		
 		return TRUE;
 	}
