@@ -185,8 +185,34 @@ if ( ! function_exists('get_filenames'))
 		}else{
 			$s = new SaeStorage();
 		}
-		return $s->getListByPath($storage_name, $source_dir, 1000, 0, TRUE);
 		
+		$num = 0;
+		$total = $s->getFilesNum ($storage_name, $source_dir);
+		$files = array();
+		$ret = 0;
+		while ( $total-- ) {
+			$ret = $s->getListByPath($storage_name, $source_dir, 100, $num, TRUE );
+			foreach($ret as $dir) {
+				if( is_array($dir) ){
+					foreach($dir as $file){
+						if( !array_key_exists('uploadTime', $file) ){
+							$files = array_merge( $files, get_filenames($file['fullName'], $include_path, $_recursion) );
+						} else {
+							if( $include_path ){
+								if( array_key_exists('fullName', $file) )
+									array_push($files, $file['fullName']);
+							}else{
+								if( array_key_exists('Name', $file) )
+									array_push($files, $file['Name']);
+							}
+						}
+					}
+				}
+				$num ++;
+			}
+		}
+ 
+		return $files;
 	}
 }
 
