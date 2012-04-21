@@ -123,7 +123,7 @@ class CI_Log {
 		}
 		$ret = $s->write($storage_name, $filepath, $message);
 		if($ret == FALSE){
-			log_message('debug', 'There\'s an error during reading file. Error No.'.$s->errno());
+			sae_debug('There\'s an error during reading file. Error No.'.$s->errno());
 			return FALSE;
 		}
 		
