@@ -87,25 +87,6 @@ class CI_Log {
 
 		$filepath = $this->_log_path.'log-'.date('Y-m-d').'.php';
 		$message  = '';
-
-		// if ( ! file_exists($filepath))
-		// {
-			// $message .= "<"."?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?".">\n\n";
-		// }
-
-		// if ( ! $fp = @fopen($filepath, FOPEN_WRITE_CREATE))
-		// {
-			// return FALSE;
-		// }
-
-		$message .= $level.' '.(($level == 'INFO') ? ' -' : '-').' '.date($this->_date_fmt). ' --> '.$msg."\n";
-
-		// flock($fp, LOCK_EX);
-		// fwrite($fp, $message);
-		// flock($fp, LOCK_UN);
-		// fclose($fp);
-
-		// @chmod($filepath, FILE_WRITE_MODE);
 		
 		$ret = config_item('sae_storage');
 		if($ret == FALSE || empty($ret)){
@@ -114,14 +95,21 @@ class CI_Log {
 		}
 		$storage_name = config_item('sae_storage_name');
 		$storage_authority = config_item('sae_storage_authority');
-		if($storage_authority == 'secret'){
+		if( $storage_authority == 'secret' ){
 			$storage_access = config_item('sae_storage_access');
 			$storage_secret = config_item('sae_storage_secret');
 			$s = new SaeStorage($storage_access, $storage_secret);
 		}else{
 			$s = new SaeStorage();
 		}
-		$ret = $s->write($storage_name, $filepath, $message);
+		if( ! $s->fileExists($storage_name, $filepath) ){
+			$message .= "<"."?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?".">\n\n";
+		}
+		
+		$message .= $level.' '.(($level == 'INFO') ? ' -' : '-').' '.date($this->_date_fmt). ' --> '.$msg."\n";
+		
+		$part = $s->read($storage_name, $filepath);
+		$ret = $s->write($storage_name, $filepath, $part.$message);
 		if($ret == FALSE){
 			sae_debug('There\'s an error during reading file. Error No.'.$s->errno());
 			return FALSE;
