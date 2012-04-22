@@ -53,6 +53,8 @@ class CI_Upload {
 	public $client_name				= '';
 
 	protected $_file_name_override	= '';
+	protected $storage				= null;
+	protected $storage_name			= null;
 
 	/**
 	 * Constructor
@@ -65,6 +67,23 @@ class CI_Upload {
 		{
 			$this->initialize($props);
 		}
+		
+		$ret = config_item('sae_storage');
+		if($ret == FALSE || empty($ret)){
+			sae_debug('Your SAE Storage is disabled.');
+			return FALSE;
+		}
+		$this->storage_name = config_item('sae_storage_name');
+		$storage_authority = config_item('sae_storage_authority');
+		if($storage_authority == 'secret'){
+			$storage_access = config_item('sae_storage_access');
+			$storage_secret = config_item('sae_storage_secret');
+			$this->storage = new SaeStorage($storage_access, $storage_secret);
+		}else{
+			$this->storage = new SaeStorage();
+		}
+		
+		
 
 		log_message('debug', "Upload Class Initialized");
 	}
@@ -310,13 +329,21 @@ class CI_Upload {
 		 * we'll use move_uploaded_file().  One of the two should
 		 * reliably work in most environments
 		 */
-		if ( ! @copy($this->file_temp, $this->upload_path.$this->file_name))
-		{
-			if ( ! @move_uploaded_file($this->file_temp, $this->upload_path.$this->file_name))
-			{
-				$this->set_error('upload_destination_error');
-				return FALSE;
-			}
+		// if ( ! @copy($this->file_temp, $this->upload_path.$this->file_name))
+		// {
+			// if ( ! @move_uploaded_file($this->file_temp, $this->upload_path.$this->file_name))
+			// {
+				// $this->set_error('upload_destination_error');
+				// return FALSE;
+			// }
+		// }
+		
+		
+		$ret = $this->storage->upload($this->storage_name, $this->upload_path.$this->file_name, $this->file_temp);
+		if($ret == FALSE){
+			log_message('error', 'There\'s an error during uploading file. Error No.'.$s->errno());
+			sae_debug('There\'s an error during uploading file. Error No.'.$s->errno());
+			return FALSE;
 		}
 
 		/*
@@ -325,7 +352,7 @@ class CI_Upload {
 		 * file was an image).  We use this information
 		 * in the "data" function.
 		 */
-		$this->set_image_properties($this->upload_path.$this->file_name);
+		$this->set_image_properties($this->file_temp);
 
 		return TRUE;
 	}
@@ -394,8 +421,10 @@ class CI_Upload {
 			mt_srand();
 			$filename = md5(uniqid(mt_rand())).$this->file_ext;
 		}
+		
+		$ret = $this->storage->fileExists($this->storage_name, $path.$filename);
 
-		if ( ! file_exists($path.$filename))
+		if ( ! $ret )
 		{
 			return $filename;
 		}
@@ -405,7 +434,8 @@ class CI_Upload {
 		$new_filename = '';
 		for ($i = 1; $i < 100; $i++)
 		{
-			if ( ! file_exists($path.$filename.$i.$this->file_ext))
+			$ret = $this->storage->fileExists($this->storage_name, $path.$filename.$i.$this->file_ext);
+			if ( ! $ret)
 			{
 				$new_filename = $filename.$i.$this->file_ext;
 				break;
@@ -705,22 +735,22 @@ class CI_Upload {
 			return FALSE;
 		}
 
-		if (function_exists('realpath') AND @realpath($this->upload_path) !== FALSE)
-		{
-			$this->upload_path = str_replace("\\", "/", realpath($this->upload_path));
-		}
+		// if (function_exists('realpath') AND @realpath($this->upload_path) !== FALSE)
+		// {
+			// $this->upload_path = str_replace("\\", "/", realpath($this->upload_path));
+		// }
 
-		if ( ! @is_dir($this->upload_path))
-		{
-			$this->set_error('upload_no_filepath');
-			return FALSE;
-		}
+		// if ( ! @is_dir($this->upload_path))
+		// {
+			// $this->set_error('upload_no_filepath');
+			// return FALSE;
+		// }
 
-		if ( ! is_really_writable($this->upload_path))
-		{
-			$this->set_error('upload_not_writable');
-			return FALSE;
-		}
+		// if ( ! is_really_writable($this->upload_path))
+		// {
+			// $this->set_error('upload_not_writable');
+			// return FALSE;
+		// }
 
 		$this->upload_path = preg_replace("/(.+?)\/*$/", "\\1/",  $this->upload_path);
 		return TRUE;
