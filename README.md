@@ -1,72 +1,72 @@
-codeigniter-for-sae
+# CodeIgniter 2.0.1 for SAE
 ===================
 
-´ËÎªºÎÎï
+## æ­¤ä¸ºä½•ç‰©
 
-codeigniter-for-saeÊÇCodeIgniter 2.0.1ÔÚĞÂÀËÔÆ¼ÆËãÆ½Ì¨SAEÉÏµÄÒÆÖ²£¬Î´À´¿ÉÄÜËæCodeIgniter°æ±¾¶øÉı¼¶¡£
+codeigniter-for-saeæ˜¯CodeIgniter 2.0.1åœ¨æ–°æµªäº‘è®¡ç®—å¹³å°SAEä¸Šçš„ç§»æ¤ï¼Œæœªæ¥å¯èƒ½éšCodeIgniterç‰ˆæœ¬è€Œå‡çº§ã€‚
 
-ÈçºÎÊ¹ÓÃ
+## å¦‚ä½•ä½¿ç”¨
 
-1.ÄúĞèÒª½«×Ô¼ºÍøÕ¾ÖĞµÄapplicationµ±ÖĞµÄÄÚÈİ£¬¸´ÖÆÖÁÏàÓ¦µÄÎ»ÖÃ
-2.ÄúĞèÒªÔÚapplication/config/config.phpÖĞ£¬³õÊ¼»¯Êı¸öÓëSAEÏà¹ØµÄ±äÁ¿£¬ÒÔÊ¹ÓÃÏàÓ¦µÄSAE¹¦ÄÜ£¬ÈçStorage¡¢SQLµÈ£»ÆäËûµÄÅäÖÃÔİÇÒÎŞĞè×÷³ö±ä»¯
-3.Ç¨ÒÆÄúµÄÊı¾İ¿âÊı¾İ¡¢ÆäËü×ÊÔ´Êı¾İ¡¢»º´æÊı¾İµÈ
+*   æ‚¨éœ€è¦å°†è‡ªå·±ç½‘ç«™ä¸­çš„applicationå½“ä¸­çš„å†…å®¹ï¼Œå¤åˆ¶è‡³ç›¸åº”çš„ä½ç½®
+*   æ‚¨éœ€è¦åœ¨application/config/config.phpä¸­ï¼Œåˆå§‹åŒ–æ•°ä¸ªä¸SAEç›¸å…³çš„å˜é‡ï¼Œä»¥ä½¿ç”¨ç›¸åº”çš„SAEåŠŸèƒ½ï¼Œå¦‚Storageã€SQLç­‰ï¼›å…¶ä»–çš„é…ç½®æš‚ä¸”æ— éœ€ä½œå‡ºå˜åŒ–
+*   è¿ç§»æ‚¨çš„æ•°æ®åº“æ•°æ®ã€å…¶å®ƒèµ„æºæ•°æ®ã€ç¼“å­˜æ•°æ®ç­‰
 
-ÏîÄ¿½øÕ¹
+## é¡¹ç›®è¿›å±•
 
-ÏÖ½×¶ÎÏîÄ¿»¹´¦ÓÚ³õ¼¶½×¶Î£¬µ«»ù±¾µÄ¹¦ÄÜÒÑÔÚÒ»¶¨³Ì¶ÈÉÏ¿ÉÓÃ£º
-1.SQLÊı¾İ¿â
-2.»º´æ
-3.ÎÄ¼şÉÏ´«
-4.ÈÕÖ¾
-5.ÆäËüºÍÎÄ¼şI/O´óÖÂÎŞ¹ØµÄ¹¦ÄÜ
+ç°é˜¶æ®µé¡¹ç›®è¿˜å¤„äºåˆçº§é˜¶æ®µï¼Œä½†åŸºæœ¬çš„åŠŸèƒ½å·²åœ¨ä¸€å®šç¨‹åº¦ä¸Šå¯ç”¨ï¼š
+*   SQLæ•°æ®åº“
+*   ç¼“å­˜
+*   æ–‡ä»¶ä¸Šä¼ 
+*   æ—¥å¿—
+*   å…¶å®ƒå’Œæ–‡ä»¶I/Oå¤§è‡´æ— å…³çš„åŠŸèƒ½
 
-ÈÔÈ»²»ÄÜÓÃ»ò»¹²»ÄÜÈ·¶¨µÄ¹¦ÄÜ£º
-1.E-mail¿â¡£SAE½ö½öÌá¹©SMTP·¢ËÍÓÊ¼ş£¬Òò´Ë¸Ã¿âÄ¿Ç°ÉĞ²»¿ÉÓÃ¡£Èç¹ûÓĞ·¢ËÍÓÊ¼şµÄĞèÇó£¬ÇëÊ¹ÓÃemail_helper¡£
-2.Zip¿â¡£Î´¾­²âÊÔ¡£
-3.Image_lib¡£Î´¾­²âÊÔ¡£
-4.directoryºÍpathÁ½¸öhelper¶¼¼ì²éµÄÊÇ±¾µØÄ¿Â¼£¬ÈÔÎ´ĞŞ¸´¡£
-5.captcha_helperÊ¹ÓÃ±¾µØÄ¿Â¼×÷ÎªÑéÖ¤ÂëÍ¼Æ¬´æ´¢Ä¿Â¼£¬ÈÔÎ´ĞŞ¸´¡£
-6.¿ÉÄÜ»¹ÓĞÆäËüÎ´ÒâÊ¶µ½µÄ¿â¡£
+ä»ç„¶ä¸èƒ½ç”¨æˆ–è¿˜ä¸èƒ½ç¡®å®šçš„åŠŸèƒ½ï¼š
+*   E-mailåº“ã€‚SAEä»…ä»…æä¾›SMTPå‘é€é‚®ä»¶ï¼Œå› æ­¤è¯¥åº“ç›®å‰å°šä¸å¯ç”¨ã€‚å¦‚æœæœ‰å‘é€é‚®ä»¶çš„éœ€æ±‚ï¼Œè¯·ä½¿ç”¨email_helperã€‚
+*   Zipåº“ã€‚æœªç»æµ‹è¯•ã€‚
+*   Image_libã€‚æœªç»æµ‹è¯•ã€‚
+*   directoryå’Œpathä¸¤ä¸ªhelperéƒ½æ£€æŸ¥çš„æ˜¯æœ¬åœ°ç›®å½•ï¼Œä»æœªä¿®å¤ã€‚
+*   captcha_helperä½¿ç”¨æœ¬åœ°ç›®å½•ä½œä¸ºéªŒè¯ç å›¾ç‰‡å­˜å‚¨ç›®å½•ï¼Œä»æœªä¿®å¤ã€‚
+*   å¯èƒ½è¿˜æœ‰å…¶å®ƒæœªæ„è¯†åˆ°çš„åº“ã€‚
 
-×¢ÒâÊÂÏî
+## æ³¨æ„äº‹é¡¹
 
-1.ÔÚÒÑ¾­¿ÉÓÃµÄ¹¦ÄÜÖĞ£¬ËùÓĞµÄÎÄ¼şĞ´²Ù×÷ÒÔ¼°ÓëĞ´Ïà¹ØµÄ¶Á²Ù×÷£¬¶¼½«×îÖÕÖ¸ÏòStorage£¬¶ø²»ÊÇ±¾µØÄ¿Â¼£¬ÒòÎª±¾µØÄ¿Â¼²»¿ÉĞ´¡£ÀıÈçCIµÄÈÕÖ¾Êä³ö½«Êä³öÖÁStorageµÄÏàÓ¦Ä¿Â¼Ê÷ÏÂ¡£
-2.»º´æ¿ÉÑ¡·¶Î§½Ï´ó£¬µ«¹Ù·½Ö»ÍÆ¼öÊ¹ÓÃMemcache×÷Îª»º´æ
-3.Çë²»ÒªÇáÒ×ĞŞ¸ÄÊı¾İ¿âÏà¹ØÅäÖÃ
+*   åœ¨å·²ç»å¯ç”¨çš„åŠŸèƒ½ä¸­ï¼Œæ‰€æœ‰çš„æ–‡ä»¶å†™æ“ä½œä»¥åŠä¸å†™ç›¸å…³çš„è¯»æ“ä½œï¼Œéƒ½å°†æœ€ç»ˆæŒ‡å‘Storageï¼Œè€Œä¸æ˜¯æœ¬åœ°ç›®å½•ï¼Œå› ä¸ºæœ¬åœ°ç›®å½•ä¸å¯å†™ã€‚ä¾‹å¦‚CIçš„æ—¥å¿—è¾“å‡ºå°†è¾“å‡ºè‡³Storageçš„ç›¸åº”ç›®å½•æ ‘ä¸‹ã€‚
+*   ç¼“å­˜å¯é€‰èŒƒå›´è¾ƒå¤§ï¼Œä½†å®˜æ–¹åªæ¨èä½¿ç”¨Memcacheä½œä¸ºç¼“å­˜
+*   è¯·ä¸è¦è½»æ˜“ä¿®æ”¹æ•°æ®åº“ç›¸å…³é…ç½®
 
 =============
-WHAT IS IT
+## WHAT IS IT
 
 codeigniter-for-sae is a port of CodeIgniter 2.0.1, the PHP framewrok, for sina SAE platform, and may upgrade to newer ones if official version does.
 
-HOW TO USE
+## HOW TO USE
 
-1.Upload your files inside your original application folder to this one's.
-2.Initlize several variables in application/config/config.php about SAE, or you cannot use functions such as Storage, SQL, etc. 
-3.Move other resource files, js files.
+*   Upload your files inside your original application folder to this one's.
+*   Initlize several variables in application/config/config.php about SAE, or you cannot use functions such as Storage, SQL, etc. 
+*   Move other resource files, js files.
 
-CURRENT STATUS
+## CURRENT STATUS
 
 This port is still in development, but most of the functions are work fine already:
 
-1.SQL
-2.Memcache
-3.Log lib
-4.Other functions without local I/O
+*   SQL
+*   Memcache
+*   Log lib
+*   Other functions without local I/O
 
 Some functions not working or not sure are:
 
-1.E-mail lib. SAE only supports SMTP for mails. Use email_helper instead.
-2.Zip lib. Lots of local I/O in it.
-3.Image_lib. Not tested.
-4.directory_helper and path_helper. They're designed for local directories. Still not fixed.
-5.captcha_helper. It use local directory for cache. Still not fixed.
-6.Others I may don't know.
+*   E-mail lib. SAE only supports SMTP for mails. Use email_helper instead.
+*   Zip lib. Lots of local I/O in it.
+*   Image_lib. Not tested.
+*   directory_helper and path_helper. They're designed for local directories. Still not fixed.
+*   captcha_helper. It use local directory for cache. Still not fixed.
+*   Others I may don't know.
 
-CAUTIOUS
+## CAUTIOUS
 
-1.All the working functions use Storage for file I/O, not local ones. SAE disables local file write. Log output will turn to Storage, notably.
-2.You should consider Memcache for cache first. 
-3.Be careful of the database config. Don't edit unless you know what you doing.
+*   All the working functions use Storage for file I/O, not local ones. SAE disables local file write. Log output will turn to Storage, notably.
+*   You should consider Memcache for cache first. 
+*   Be careful of the database config. Don't edit unless you know what you doing.
 
-CodeIgniter 2.0.1 for SAE
+
