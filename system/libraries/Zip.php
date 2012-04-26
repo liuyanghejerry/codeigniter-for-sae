@@ -38,6 +38,7 @@ class CI_Zip  {
 	var $file_num	= 0;
 	var $offset		= 0;
 	var $now;
+	var $storage_domain = 0;
 
 	/**
 	 * Constructor
@@ -47,6 +48,7 @@ class CI_Zip  {
 		log_message('debug', "Zip Compression Class Initialized");
 
 		$this->now = time();
+		$this->storage_domain = config_item('sae_storage_name').'/';
 	}
 
 	// --------------------------------------------------------------------
@@ -88,7 +90,9 @@ class CI_Zip  {
 	function _get_mod_time($dir)
 	{
 		// filemtime() will return false, but it does raise an error.
-		$date = (@filemtime($dir)) ? filemtime($dir) : getdate($this->now);
+		$dir = ltrim($dir,'./');
+		$date = (@filemtime('saestor://'.$this->storage_domain.$dir)) ? filemtime('saestor://'.$this->storage_domain.$dir) : getdate($this->now);
+		$date = getdate($this->now);
 
 		$time['file_mtime'] = ($date['hours'] << 11) + ($date['minutes'] << 5) + $date['seconds'] / 2;
 		$time['file_mdate'] = (($date['year'] - 1980) << 9) + ($date['mon'] << 5) + $date['mday'];
@@ -241,12 +245,13 @@ class CI_Zip  {
 	 */
 	function read_file($path, $preserve_filepath = FALSE)
 	{
-		if ( ! file_exists($path))
+		$path = ltrim($path,'./');
+		if ( ! file_exists('saestor://'.$this->storage_domain.$path))
 		{
 			return FALSE;
 		}
 
-		if (FALSE !== ($data = file_get_contents($path)))
+		if (FALSE !== ($data = file_get_contents('saestor://'.$this->storage_domain.$path)))
 		{
 			$name = str_replace("\\", "/", $path);
 
@@ -276,7 +281,8 @@ class CI_Zip  {
 	 */
 	function read_dir($path, $preserve_filepath = TRUE, $root_path = NULL)
 	{
-		if ( ! $fp = @opendir($path))
+		$path = ltrim($path,'./');
+		if ( ! $fp = @opendir('saestor://'.$this->storage_domain.$path))
 		{
 			return FALSE;
 		}
@@ -284,7 +290,7 @@ class CI_Zip  {
 		// Set the original directory root for child dir's to use as relative
 		if ($root_path === NULL)
 		{
-			$root_path = dirname($path).'/';
+			$root_path = dirname('saestor://'.$this->storage_domain.$path).'/';
 		}
 
 		while (FALSE !== ($file = readdir($fp)))
@@ -294,13 +300,13 @@ class CI_Zip  {
 				continue;
 			}
 
-			if (@is_dir($path.$file))
+			if (@is_dir('saestor://'.$this->storage_domain.$path.$file))
 			{
 				$this->read_dir($path.$file."/", $preserve_filepath, $root_path);
 			}
 			else
 			{
-				if (FALSE !== ($data = file_get_contents($path.$file)))
+				if (FALSE !== ($data = file_get_contents('saestor://'.$this->storage_domain.$path.$file)))
 				{
 					$name = str_replace("\\", "/", $path);
 
@@ -357,14 +363,15 @@ class CI_Zip  {
 	 */
 	function archive($filepath)
 	{
-		if ( ! ($fp = @fopen($filepath, FOPEN_WRITE_CREATE_DESTRUCTIVE)))
+		$path = ltrim($filepath,'./');
+		if ( ! ($fp = @fopen('saestor://'.$this->storage_domain.$filepath, FOPEN_WRITE_CREATE_DESTRUCTIVE)))
 		{
 			return FALSE;
 		}
 
-		flock($fp, LOCK_EX);
+		//flock($fp, LOCK_EX);
 		fwrite($fp, $this->get_zip());
-		flock($fp, LOCK_UN);
+		//flock($fp, LOCK_UN);
 		fclose($fp);
 
 		return TRUE;
