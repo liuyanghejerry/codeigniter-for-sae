@@ -23,7 +23,6 @@ codeigniter-for-sae是CodeIgniter 2.0.1在新浪云计算平台SAE上的移植�
 仍然不能用或还不能确定的功能：
 *   E-mail库。SAE仅仅提供SMTP发送邮件，因此该库目前尚不可用。如果有发送邮件的需求，请使用email_helper。
 *   Image_lib。未经测试。
-*   captcha_helper使用本地目录作为验证码图片存储目录，仍未修复。
 *   可能还有其它未意识到的库。
 
 ## 注意事项
@@ -56,7 +55,6 @@ Some functions not working or not sure are:
 
 *   E-mail lib. SAE only supports SMTP for mails. Use email_helper instead.
 *   Image_lib. Not tested.
-*   captcha_helper. It use local directory for cache. Still not fixed.
 *   Others I may don't know.
 
 ## CAUTIOUS
