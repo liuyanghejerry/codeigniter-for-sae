@@ -43,35 +43,43 @@ if ( ! function_exists('directory_map'))
 {
 	function directory_map($source_dir, $directory_depth = 0, $hidden = FALSE)
 	{
-		if ($fp = @opendir($source_dir))
-		{
-			$filedata	= array();
-			$new_depth	= $directory_depth - 1;
-			$source_dir	= rtrim($source_dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-
-			while (FALSE !== ($file = readdir($fp)))
-			{
-				// Remove '.', '..', and hidden files [optional]
-				if ( ! trim($file, '.') OR ($hidden == FALSE && $file[0] == '.'))
-				{
-					continue;
-				}
-
-				if (($directory_depth < 1 OR $new_depth > 0) && @is_dir($source_dir.$file))
-				{
-					$filedata[$file] = directory_map($source_dir.$file.DIRECTORY_SEPARATOR, $new_depth, $hidden);
-				}
-				else
-				{
-					$filedata[] = $file;
-				}
-			}
-
-			closedir($fp);
-			return $filedata;
+		$ret = config_item('sae_storage');
+		if($ret == FALSE || empty($ret)){
+			log_message('debug','Your SAE Storage is disabled.');
+			return FALSE;
 		}
-
-		return FALSE;
+		
+		$storage_name = config_item('sae_storage_name');
+		$storage_authority = config_item('sae_storage_authority');
+		if($storage_authority == 'secret'){
+			$storage_access = config_item('sae_storage_access');
+			$storage_secret = config_item('sae_storage_secret');
+			$s = new SaeStorage($storage_access, $storage_secret);
+		}else{
+			$s = new SaeStorage();
+		}
+		
+		$num = 0;
+		$files = array();
+		$ret = $s->getListByPath($storage_name, $source_dir, 100, $num, TRUE );
+		$total = $ret['dirNum'] + $ret['fileNum'] ;
+		while( $total ){
+			foreach($ret['dirs'] as $dir) {
+				if( $directory_depth == 1){
+						$files[$dir['name']] = array();
+					}else{
+						$files[$dir['name']] = directory_map($dir['fullName'], --$directory_depth, $hidden);
+					}
+				$num ++;
+				$total --;
+			}
+			foreach($ret['files'] as $file){
+				array_push($files, $file['Name']);
+				$num ++;
+				$total --;
+			}
+		}
+		return $files;
 	}
 }
 

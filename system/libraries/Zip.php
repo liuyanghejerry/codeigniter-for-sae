@@ -282,44 +282,36 @@ class CI_Zip  {
 	function read_dir($path, $preserve_filepath = TRUE, $root_path = NULL)
 	{
 		$path = ltrim($path,'./');
-		if ( ! $fp = @opendir('saestor://'.$this->storage_domain.$path))
-		{
-			return FALSE;
+		
+		$storage_name = config_item('sae_storage_name');
+		$storage_authority = config_item('sae_storage_authority');
+		if($storage_authority == 'secret'){
+			$storage_access = config_item('sae_storage_access');
+			$storage_secret = config_item('sae_storage_secret');
+			$s = new SaeStorage($storage_access, $storage_secret);
+		}else{
+			$s = new SaeStorage();
 		}
-
-		// Set the original directory root for child dir's to use as relative
-		if ($root_path === NULL)
-		{
-			$root_path = dirname('saestor://'.$this->storage_domain.$path).'/';
-		}
-
-		while (FALSE !== ($file = readdir($fp)))
-		{
-			if (substr($file, 0, 1) == '.')
-			{
-				continue;
+		
+		$num = 0;
+		$files = array();
+		$ret = $s->getListByPath($storage_name, $path, 100, $num, TRUE );
+		$total = $ret['dirNum'] + $ret['fileNum'] ;
+		while( $total ){
+			foreach($ret['dirs'] as $dir) {
+				$this->read_dir($dir['fullName']."/", $preserve_filepath, $root_path);
+				$num ++;
+				$total --;
 			}
-
-			if (@is_dir('saestor://'.$this->storage_domain.$path.$file))
-			{
-				$this->read_dir($path.$file."/", $preserve_filepath, $root_path);
-			}
-			else
-			{
-				if (FALSE !== ($data = file_get_contents('saestor://'.$this->storage_domain.$path.$file)))
-				{
-					$name = str_replace("\\", "/", $path);
-
-					if ($preserve_filepath === FALSE)
-					{
-						$name = str_replace($root_path, '', $name);
-					}
-
-					$this->add_data($name.$file, $data);
-				}
+			foreach($ret['files'] as $file){
+			
+				$name = str_replace($root_path, '', $file['fullName']);
+				$data = $s->read($storage_name, $file['fullName']);
+				$this->add_data($name, $data);
+				$num ++;
+				$total --;
 			}
 		}
-
 		return TRUE;
 	}
 

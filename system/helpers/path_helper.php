@@ -44,26 +44,24 @@ if ( ! function_exists('set_realpath'))
 		{
 			show_error('The path you submitted must be a local server path, not a URL');
 		}
+		
+		$storage_domain = config_item('sae_storage_name').'/';
+		
+		$path2 = $path;
+		$path = ltrim($path, './');
 
 		// Resolve the path
-		if (function_exists('realpath') AND @realpath($path) !== FALSE)
+		if (function_exists('realpath') AND @realpath('saestor://'.$storage_domain.$path) !== FALSE)
 		{
-			$path = realpath($path).'/';
+			$path2 = realpath('saestor://'.$storage_domain.$path);
 		}
 
 		// Add a trailing slash
-		$path = preg_replace("#([^/])/*$#", "\\1/", $path);
+		 $path2 = preg_replace("#([^/])/*$#", "\\1/", $path2);
+		 
+		// There is no need to detect whether a directory exists
 
-		// Make sure the path exists
-		if ($check_existance == TRUE)
-		{
-			if ( ! is_dir($path))
-			{
-				show_error('Not a valid path: '.$path);
-			}
-		}
-
-		return $path;
+		return $path2;
 	}
 }
 
