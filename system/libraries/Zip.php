@@ -294,17 +294,18 @@ class CI_Zip  {
 		}
 		
 		$num = 0;
+		$loop = TRUE;
 		$files = array();
-		$ret = $s->getListByPath($storage_name, $path, 100, $num, TRUE );
-		$total = $ret['dirNum'] + $ret['fileNum'] ;
-		while( $total ){
+		while($loop){
+			$ret = $s->getListByPath($storage_name, $path, 100, $num, TRUE );
+			$total = count($ret['dirs']) + count($ret['files']) ;
+			if( ! $total ) $loop = FALSE;
 			foreach($ret['dirs'] as $dir) {
 				$this->read_dir($dir['fullName']."/", $preserve_filepath, $root_path);
 				$num ++;
 				$total --;
 			}
 			foreach($ret['files'] as $file){
-			
 				$name = str_replace($root_path, '', $file['fullName']);
 				$data = $s->read($storage_name, $file['fullName']);
 				$this->add_data($name, $data);

@@ -62,16 +62,8 @@ if ( ! function_exists('create_captcha'))
 		{
 			return FALSE;
 		}
-
-		if ( ! @is_dir($img_path))
-		{
-			return FALSE;
-		}
-
-		if ( ! is_writable($img_path))
-		{
-			return FALSE;
-		}
+		
+		// SAE cannot detect whether a dir is exists or writable
 
 		if ( ! extension_loaded('gd'))
 		{
@@ -81,27 +73,45 @@ if ( ! function_exists('create_captcha'))
 		// -----------------------------------
 		// Remove old images
 		// -----------------------------------
-
+		
 		list($usec, $sec) = explode(" ", microtime());
 		$now = ((float)$usec + (float)$sec);
-
-		$current_dir = @opendir($img_path);
-
-		while ($filename = @readdir($current_dir))
-		{
-			if ($filename != "." and $filename != ".." and $filename != "index.html")
-			{
-				$name = str_replace(".jpg", "", $filename);
-
+		
+		$ret = config_item('sae_storage');
+		if($ret == FALSE || empty($ret)){
+			log_message('debug','Your SAE Storage is disabled.');
+			return FALSE;
+		}
+		
+		$storage_name = config_item('sae_storage_name');
+		$storage_authority = config_item('sae_storage_authority');
+		if($storage_authority == 'secret'){
+			$storage_access = config_item('sae_storage_access');
+			$storage_secret = config_item('sae_storage_secret');
+			$s = new SaeStorage($storage_access, $storage_secret);
+		}else{
+			$s = new SaeStorage();
+		}
+		
+		$num = 0;
+		$loop = TRUE;
+		while($loop){
+			$ret = $s->getListByPath($storage_name, $img_path, 100, $num, TRUE);
+			$total = count($ret['dirs']) + count($ret['files']);
+			$fileNum = count($ret['files']);
+			if( ! $fileNum )$loop = FALSE;
+			foreach($ret['files'] as $file){
+				$name = str_replace(".jpg", "", $file['Name']);
 				if (($name + $expiration) < $now)
 				{
-					@unlink($img_path.$filename);
+					$s->delete($storage_name, $file['fullName']);
 				}
+				$num ++;
+				$fileNum --;
 			}
+			
 		}
-
-		@closedir($current_dir);
-
+		
 		// -----------------------------------
 		// Do we have a "word" yet?
 		// -----------------------------------
@@ -186,7 +196,7 @@ if ( ! function_exists('create_captcha'))
 		//  Write the text
 		// -----------------------------------
 
-		$use_font = ($font_path != '' AND file_exists($font_path) AND function_exists('imagettftext')) ? TRUE : FALSE;
+		$use_font = ($font_path != '' AND function_exists('imagettftext')) ? TRUE : FALSE;
 
 		if ($use_font == FALSE)
 		{
@@ -212,7 +222,8 @@ if ( ! function_exists('create_captcha'))
 			else
 			{
 				$y = rand($img_height/2, $img_height-3);
-				imagettftext($im, $font_size, $angle, $x, $y, $text_color, $font_path, substr($word, $i, 1));
+				$font_path2 = ltrim($font_path, './');
+				imagettftext($im, $font_size, $angle, $x, $y, $text_color, 'saestor://'.$storage_name.'/'.$font_path2, substr($word, $i, 1));
 				$x += $font_size;
 			}
 		}
@@ -229,8 +240,12 @@ if ( ! function_exists('create_captcha'))
 		// -----------------------------------
 
 		$img_name = $now.'.jpg';
-
-		ImageJPEG($im, $img_path.$img_name);
+		
+		$img_path2 = ltrim($img_path, './');
+		
+		ImageJPEG($im, SAE_TMP_PATH.$img_name);
+		
+		$s->write($storage_name, $img_path2.$img_name, file_get_contents(SAE_TMP_PATH.$img_name));
 
 		$img = "<img src=\"$img_url$img_name\" width=\"$img_width\" height=\"$img_height\" style=\"border:0;\" alt=\" \" />";
 

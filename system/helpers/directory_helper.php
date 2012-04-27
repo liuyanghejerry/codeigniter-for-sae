@@ -60,10 +60,12 @@ if ( ! function_exists('directory_map'))
 		}
 		
 		$num = 0;
+		$loop = TRUE;
 		$files = array();
-		$ret = $s->getListByPath($storage_name, $source_dir, 100, $num, TRUE );
-		$total = $ret['dirNum'] + $ret['fileNum'] ;
-		while( $total ){
+		while( $loop){
+			$ret = $s->getListByPath($storage_name, $source_dir, 100, $num, TRUE );
+			$total = count($ret['dirs']) + count($ret['files']) ;
+			if( ! $total ) $loop = FALSE;
 			foreach($ret['dirs'] as $dir) {
 				if( $directory_depth == 1){
 						$files[$dir['name']] = array();

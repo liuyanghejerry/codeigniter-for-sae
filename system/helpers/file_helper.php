@@ -189,9 +189,11 @@ if ( ! function_exists('get_filenames'))
 		
 		$num = 0;
 		$files = array();
-		$ret = $s->getListByPath($storage_name, $source_dir, 100, $num, TRUE );
-		$total = $ret['dirNum'] + $ret['fileNum'] ;
-		while( $total ){
+		$loop = TRUE;
+		while($loop){
+			$ret = $s->getListByPath($storage_name, $source_dir, 100, $num, TRUE );
+			$total = count($ret['dirs']) + count($ret['files']) ;
+			if( ! $total ) $loop = FALSE;
 			foreach($ret['dirs'] as $dir) {
 				if( $_recursion ){
 					$files = array_merge( $files, get_filenames($dir['fullName'], $include_path, $_recursion) );
