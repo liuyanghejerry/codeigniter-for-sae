@@ -75,6 +75,10 @@ class CI_Image_lib {
 	var $error_msg			= array();
 	var $wm_use_drop_shadow	= FALSE;
 	var $wm_use_truetype	= FALSE;
+	
+	var $storage			= FALSE;
+	var $storage_name		= FALSE;
+	var $original_dest		= '';
 
 	/**
 	 * Constructor
@@ -87,6 +91,16 @@ class CI_Image_lib {
 		if (count($props) > 0)
 		{
 			$this->initialize($props);
+		}
+		
+		$this->storage_name = config_item('sae_storage_name');
+		$storage_authority = config_item('sae_storage_authority');
+		if($storage_authority == 'secret'){
+			$storage_access = config_item('sae_storage_access');
+			$storage_secret = config_item('sae_storage_secret');
+			$this->storage = new SaeStorage($storage_access, $storage_secret);
+		}else{
+			$this->storage = new SaeStorage();
 		}
 
 		log_message('debug', "Image Lib Class Initialized");
@@ -173,14 +187,15 @@ class CI_Image_lib {
 		 * full server path in order to more reliably read it.
 		 *
 		 */
-		if (function_exists('realpath') AND @realpath($this->source_image) !== FALSE)
-		{
-			$full_source_path = str_replace("\\", "/", realpath($this->source_image));
-		}
-		else
-		{
-			$full_source_path = $this->source_image;
-		}
+		// if (function_exists('realpath') AND @realpath($this->source_image) !== FALSE)
+		// {
+			// $full_source_path = str_replace("\\", "/", realpath($this->source_image));
+		// }
+		// else
+		// {
+			// $full_source_path = $this->source_image;
+		// }
+		$full_source_path = $this->source_image;
 
 		$x = explode('/', $full_source_path);
 		$this->source_image = end($x);
@@ -215,14 +230,14 @@ class CI_Image_lib {
 			}
 			else
 			{
-				if (function_exists('realpath') AND @realpath($this->new_image) !== FALSE)
-				{
-					$full_dest_path = str_replace("\\", "/", realpath($this->new_image));
-				}
-				else
-				{
-					$full_dest_path = $this->new_image;
-				}
+				// if (function_exists('realpath') AND @realpath($this->new_image) !== FALSE)
+				// {
+					// $full_dest_path = str_replace("\\", "/", realpath($this->new_image));
+				// }
+				// else
+				// {
+					 $full_dest_path = $this->new_image;
+				// }
 
 				// Is there a file name?
 				if ( ! preg_match("#\.(jpg|jpeg|gif|png)$#i", $full_dest_path))
@@ -258,9 +273,15 @@ class CI_Image_lib {
 
 		$filename = $xp['name'];
 		$file_ext = $xp['ext'];
+		
+		$this->original_dest = $this->dest_folder;
+		$this->dest_folder = SAE_TMP_PATH.'\\'; // The only way to let GD work is to use tmp path, and then copy to storage
 
 		$this->full_src_path = $this->source_folder.$this->source_image;
 		$this->full_dst_path = $this->dest_folder.$filename.$this->thumb_marker.$file_ext;
+		
+		
+		
 
 		/*
 		 * Should we maintain image proportions?
@@ -1129,6 +1150,7 @@ class CI_Image_lib {
 	{
 		if ($path == '')
 			$path = $this->full_src_path;
+		$path = 'saestor://test/'.ltrim($path, './');
 
 		if ($image_type == '')
 			$image_type = $this->image_type;
@@ -1230,6 +1252,14 @@ class CI_Image_lib {
 							return FALSE;
 				break;
 		}
+		
+		$xp	= $this->explode_name($this->dest_image);
+
+		$filename = $xp['name'];
+		$file_ext = $xp['ext'];
+		
+		$real_name = $this->original_dest.$filename.$this->thumb_marker.$file_ext;
+		$this->storage->write($this->storage_name, $real_name, file_get_contents($this->full_dst_path));
 
 		return TRUE;
 	}
@@ -1328,11 +1358,13 @@ class CI_Image_lib {
 		if ($path == '')
 			$path = $this->full_src_path;
 
-		if ( ! file_exists($path))
-		{
-			$this->set_error('imglib_invalid_path');
-			return FALSE;
-		}
+		// if ( ! file_exists($path))
+		// {
+			// $this->set_error('imglib_invalid_path');
+			// return FALSE;
+		// }
+		
+		$path = 'saestor://test/'.ltrim($path, './');
 
 		$vals = @getimagesize($path);
 
