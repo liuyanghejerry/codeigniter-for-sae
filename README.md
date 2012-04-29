@@ -13,7 +13,7 @@ codeigniter-for-sae是CodeIgniter 2.0.1在新浪云计算平台SAE上的移植�
 
 ## 项目进展
 
-现阶段项目还处于初级阶段，但基本的功能已在一定程度上可用：
+现阶段项目处于测试阶段，大部分功能已经可用，但可能还不够稳定：
 *   SQL数据库
 *   缓存
 *   文件上传
@@ -49,7 +49,7 @@ codeigniter-for-sae is a port of CodeIgniter 2.0.1, the PHP framewrok, for sina 
 
 ## CURRENT STATUS
 
-This port is still in development, but most of the functions are work fine already:
+This port is still in beta, but most of the functions can work already, not stable tough:
 
 *   SQL
 *   Cache
