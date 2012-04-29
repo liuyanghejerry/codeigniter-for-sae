@@ -18,10 +18,16 @@ codeigniter-for-sae是CodeIgniter 2.0.1在新浪云计算平台SAE上的移植�
 *   缓存
 *   文件上传
 *   日志
-*   其它和文件I/O大致无关的功能
+*   图像处理
+*   Zip
+*   FTP
+*   所有的helper
+*   其它和文件I/O无关的功能
 
 仍然不能用或还不能确定的功能：
 *   E-mail库。SAE仅仅提供SMTP发送邮件，因此该库目前尚不可用。如果有发送邮件的需求，请使用email_helper。
+*   Trackback 类。未经测试。
+*   XML-RPC 类。未经测试。
 *   可能还有其它未意识到的库。
 
 ## 注意事项
@@ -46,19 +52,25 @@ codeigniter-for-sae is a port of CodeIgniter 2.0.1, the PHP framewrok, for sina 
 This port is still in development, but most of the functions are work fine already:
 
 *   SQL
-*   Memcache
+*   Cache
+*   Upload
 *   Log lib
+*   Zip lib
+*   Image lib
+*   All helpers
 *   Other functions without local I/O
 
 Some functions not working or not sure are:
 
 *   E-mail lib. SAE only supports SMTP for mails. Use email_helper instead.
+*   Trackback lib. Not tested.
+*   XML-RPC lib. Not tested
 *   Others I may don't know.
 
 ## CAUTIOUS
 
 *   All the working functions use Storage for file I/O, not local ones. SAE disables local file write. Log output will turn to Storage, notably.
-*   You should consider Memcache for cache first. 
+*   You should consider Memcache for cache first, you can choose others like storage, kvdb, though.
 *   Be careful of the database config. Don't edit unless you know what you doing.
 
 
