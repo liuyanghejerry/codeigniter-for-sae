@@ -242,7 +242,45 @@ if ( ! function_exists('get_dir_file_info'))
 {
 	function get_dir_file_info($source_dir, $top_level_only = TRUE, $_recursion = FALSE)
 	{
-		return FALSE;
+		$ret = config_item('sae_storage');
+		if($ret == FALSE || empty($ret)){
+			log_message('debug','Your SAE Storage is disabled.');
+			return FALSE;
+		}
+		
+		$storage_name = config_item('sae_storage_name');
+		$storage_authority = config_item('sae_storage_authority');
+		if($storage_authority == 'secret'){
+			$storage_access = config_item('sae_storage_access');
+			$storage_secret = config_item('sae_storage_secret');
+			$s = new SaeStorage($storage_access, $storage_secret);
+		}else{
+			$s = new SaeStorage();
+		}
+		
+		$num = 0;
+		$loop = TRUE;
+		$files = array();
+		while( $loop){
+			$ret = $s->getListByPath($storage_name, $source_dir, 100, $num, TRUE );
+			$total = count($ret['dirs']) + count($ret['files']) ;
+			if( ! $total ) $loop = FALSE;
+			foreach($ret['dirs'] as $dir) {
+				if( $top_level_only === TRUE){
+						// $files[$dir['name']] = array();
+					}else{
+						$files[$dir['name']] = get_dir_file_info($dir['fullName'], $top_level_only, $_recursion);
+					}
+				$num ++;
+				$total --;
+			}
+			foreach($ret['files'] as $file){
+				array_push($files, $file);
+				$num ++;
+				$total --;
+			}
+		}
+		return $files;
 	}
 }
 
@@ -265,7 +303,34 @@ if ( ! function_exists('get_file_info'))
 {
 	function get_file_info($file, $returned_values = array('name', 'server_path', 'size', 'date'))
 	{
-
+		
+		$ret = config_item('sae_storage');
+		if($ret == FALSE || empty($ret)){
+			log_message('debug','Your SAE Storage is disabled.');
+			return FALSE;
+		}
+		
+		$storage_name = config_item('sae_storage_name');
+		$storage_authority = config_item('sae_storage_authority');
+		if($storage_authority == 'secret'){
+			$storage_access = config_item('sae_storage_access');
+			$storage_secret = config_item('sae_storage_secret');
+			$s = new SaeStorage($storage_access, $storage_secret);
+		}else{
+			$s = new SaeStorage();
+		}
+		$ret = $s->fileExists($storage_name, $file);
+		
+		if($ret === FALSE){
+			// file doesn't exits
+			return FALSE;
+		}
+		
+		$ret = $s->getAttr($storage_name, $file);
+		
+		if($ret !== FALSE){
+			return $ret;
+		}
 		return FALSE;
 	}
 }
