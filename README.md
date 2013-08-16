@@ -1,6 +1,12 @@
 # CodeIgniter 2.0.1 for SAE
 ===================
 
+## 说在前面
+
+目前CodeIgniter的最新版本已被移植至SAE，见于https://github.com/CodeIgniter-Chinese/CodeIgniter_SAE
+
+本项目就此终止。
+
 ## 此为何物
 
 codeigniter-for-sae是CodeIgniter 2.0.1在新浪云计算平台SAE上的移植，未来可能随CodeIgniter版本而升级。
